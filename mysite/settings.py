@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
 SECRET_KEY = os.environ.get("SECRET_KEY")  # Stored securely in Render env vars
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['django-todo-z964.onrender.com']  # Update with your Render URL
 
 # Installed apps
