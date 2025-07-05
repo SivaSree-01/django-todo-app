@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TO-DO LIST ☑️</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'todo/styles.css' %}">
+</head>
+<body>
+<div class="container">
+    <h1>MY TASKS 📝</h1>
+    
+    <div class="filter-buttons">
+        <a href="?filter=all"><button>📋 All</button></a>
+        <a href="?filter=pending"><button>⌛ Pending</button></a>
+        <a href="?filter=completed"><button>✔️ Completed</button></a>
+    </div>
+
+    <ul class="task-list">
+        {% for task in Tasks %}
+        <li class="task-item {% if task.Completed %}completed{% elif task.DueDate and task.DueDate < today %}overdue{% elif task.DueDate == today %}due-today{% else %}regular{% endif %}">
+            <form method="POST" action="{% url 'update_task' task.id %}">
+                {% csrf_token %}
+                <input type="checkbox" name="completed" onchange="this.form.submit()" {% if task.Completed %}checked{% endif %} class="checkbox">
+            </form>
+
+            <span class="task-title">
+                {% if task.Completed %}
+                    <strike>{{ task.Title }}</strike>
+                {% else %}
+                    {{ task.Title }}
+                {% endif %}
+            </span>
+
+            {% if task.DueDate %}
+            <span class="due-date">
+                📅 {{ task.DueDate|date:"F d, Y" }}
+            </span>
+            {% endif %}
+
+            <form method="POST" action="{% url 'delete_task' task.id %}">
+                {% csrf_token %}
+                <button type="submit" class="delete-button">➖</button>
+            </form>
+        </li>
+        {% empty %}
+        <li class="task-item">No tasks yet.</li>
+        {% endfor %}
+    </ul>
+
+    <form method="POST" action="" class="add-form">
+        {% csrf_token %}
+        <input type="text" name="Title" placeholder="Add a task..." required>
+        <input type="date" name="DueDate">
+        <button type="submit">Add Task</button>
+    </form>
+
+    <div class="bulk-buttons">
+        <form method="POST" action="{% url 'mark_all_completed' %}">
+            {% csrf_token %}
+            <button type="submit">✔️ Mark All Completed</button>
+        </form>
+        <form method="POST" action="{% url 'delete_all' %}">
+            {% csrf_token %}
+            <button type="submit">🗑️ Delete All</button>
+        </form>
+        <form method="POST" action="{% url 'clear_completed' %}">
+            {% csrf_token %}
+            <button type="submit">🧹 Clear Completed</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
